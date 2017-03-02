@@ -12,7 +12,7 @@ export const addAnswer = function(answer) {
   });
 }
 
-export const fetchTodos = function() {
+export const fetchQuizz = function() {
   return fetch('http://localhost:3001/quizz', {
     method: 'GET'
   })

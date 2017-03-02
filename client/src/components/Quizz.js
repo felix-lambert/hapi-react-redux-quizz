@@ -1,8 +1,8 @@
 import React, { Component, PropTypes } from 'react';
 import { connect } from 'react-redux';
 import { withRouter } from 'react-router';
-import {addAnswer, fetchTodos} from '../actions';
-import { getQuizz } from '../reducers';
+import {addAnswer, fetchQuizz, requestQuizz} from '../actions';
+import { getQuizz, getIsFetching } from '../reducers';
 
 /* 
   For ES6 classes, getInitialState has been deprecated in 
@@ -30,19 +30,26 @@ class Quizz extends Component {
   }
 
   fetchData() {
-    const { fetchTodos } = this.props;
-    fetchTodos();
+    const { fetchQuizz, requestQuizz } = this.props;
+    requestQuizz();
+    fetchQuizz();
   }
 
-  render() {   
+  render() {
     if (this.props.quizz[6] && this.props.quizz[6].result) {
-      console.log(this.props.quizz[6])
       return (
         <div>
           <br/>
           <div className="jumbotron">
             <h1 className="text-center">You had {this.props.quizz[6].result} out of 20. Please reload the page if you want to try again</h1>
           </div>
+        </div>);
+    }
+    if (this.props.isFetching && !this.props.quizz.length) {
+      return (
+        <div>
+          <br/>
+          <p className="text-center">Loading...</p>
         </div>);
     }
     return (
@@ -57,6 +64,7 @@ class Quizz extends Component {
               response = 'true'
             }
             const { addAnswer } = this.props;
+            requestQuizz();
             addAnswer({
               answer: response
             });
@@ -96,24 +104,27 @@ class Quizz extends Component {
            <button className="btn btn default text-center" type="submit">Submit answer</button>
         </form>
       </div>
+
     );
   }
 }
 
 Quizz.propTypes = {
-  fetchTodos: PropTypes.func.isRequired,
+  fetchQuizz: PropTypes.func.isRequired,
   addAnswer: PropTypes.func.isRequired,
+  requestQuizz: PropTypes.func.isRequired,
 };
 
 const mapStateToProps = (state, { params }) => {
   return {
-    quizz: getQuizz(state)
+    quizz: getQuizz(state),
+    isFetching: getIsFetching(state)
   };
 };
 
 Quizz = withRouter(connect(
   mapStateToProps,
-  {fetchTodos, addAnswer}
+  {fetchQuizz, addAnswer, requestQuizz}
 )(Quizz));
 
 export default Quizz;

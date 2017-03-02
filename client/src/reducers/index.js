@@ -1,10 +1,37 @@
-/*
-  Redux is a predictable state container for JavaScript apps
-  The whole state of your app is stored in an object tree 
-  inside a single store
- */
 import { combineReducers } from 'redux';
-import quizz, * as fromQuizz from './quizz';
+
+const byId = (state = {}, action) => {
+  switch (action.type) {
+    case 'RECEIVE_QUIZZ': // eslint-disable-line no-case-declarations
+      const nextState = { ...state };
+      action.response.forEach(todo => {
+        nextState[todo.id] = todo;
+      });
+      return nextState;
+    default:
+      return state;
+  }
+};
+
+const allIds = (state = [], action) => {
+  switch (action.type) {
+    case 'RECEIVE_QUIZZ':
+      return action.response.map(quizz => quizz.id);
+    default:
+      return state;
+  }
+};
+
+const isFetching = (state = false, action) => {
+  switch (action.type) {
+    case 'REQUEST_QUIZZ':
+      return true;
+    case 'RECEIVE_QUIZZ':
+      return false;
+    default:
+      return state;
+  }
+};
 
 /*
   As your app grows, instead of adding stores, 
@@ -14,11 +41,25 @@ import quizz, * as fromQuizz from './quizz';
   is just one root component in a React app, but it 
   is composed out of many small components
  */
-const quizzApp = combineReducers({
-  quizz,
+const quizz = combineReducers({
+  byId,
+  allIds,
+  isFetching,
 });
 
-export default quizzApp;
+export default quizz;
 
-export const getQuizz = (state, filter) =>
-  fromQuizz.getQuizz(state.quizz, filter);
+const GetQuizz = function(state) {
+  const ids = state.allIds;
+  return ids.map(id => state.byId[id]);
+}
+
+const IsFetching = state => isFetching;
+
+const GetIsFetching = (state) => IsFetching(state.allIds);
+
+export const getQuizz = (state) => GetQuizz(state);
+
+export const getIsFetching = (state) => GetIsFetching(state);
+
+  

@@ -1,19 +1,28 @@
 import * as api from '../api';
 
-const receiveTodos = function(response) {
+const receiveQuizz = function(response) {
   return {
-    type: 'RECEIVE_TODOS',
+    type: 'RECEIVE_QUIZZ',
     response
   }
 }
 
-export const fetchTodos = () =>
-  api.fetchTodos().then(response =>
-    receiveTodos(response)
+export const requestQuizz = function() {
+  console.log('/////////////////////////////////////////////////////');
+  console.log('requestQuizz');
+  return {
+    type: 'REQUEST_QUIZZ'
+  }
+}
+
+export const fetchQuizz = () =>
+  api.fetchQuizz().then(response =>
+    receiveQuizz(response)
   );
 
 export const addAnswer = (answer) => 
   api.addAnswer(answer).then(response =>
-    receiveTodos(response)
+    receiveQuizz(response)
   );
+
 
